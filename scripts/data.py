@@ -87,4 +87,4 @@ def add_teacher(email, first_name, last_name, classroom_id, teacher_id=generate_
     cursor.close()
     cnx.close()
 
-add_teacher(email="test@gmail.com", first_name="testy", last_name="mctest", classroom_id=4111)
+# add_teacher(email="test@gmail.com", first_name="testy", last_name="mctest", classroom_id=4111)
