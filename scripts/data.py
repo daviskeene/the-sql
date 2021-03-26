@@ -134,6 +134,28 @@ def add_classroom(classroom_name, classroom_description, classroom_id=generate_i
     cursor.close()
     cnx.close()
     
+def add_assignment(name, description, available_points, code, test_cases, classroom_id, assignment_id=generate_id(generate_random_word(50))):
+    """
+    Adds an assignment to the database. 
+    
+    If no assignment_id is specified, then we will create one.
+    """
+    if (name is None or description is None or available_points is None or code is None or test_cases is None):
+        print("Missing one or more necessary fields.")
+        return
+    
+    # Put all data from arguments into a tuple
+    data_assignment = (assignment_id, name, description, available_points, code, test_cases, classroom_id)
+    # Execute query
+    cursor.execute(add_student_q, data_assignment)
+
+    # Make sure data is committed to the database
+    cnx.commit()
+
+    # Close connections
+    cursor.close()
+    cnx.close()
+    
 # Example code for adding students
 for i in range(100):
     first_name = random.choice(first_names)
