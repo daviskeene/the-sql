@@ -90,7 +90,7 @@ def add_teacher(email, first_name, last_name, classroom_id, teacher_id=generate_
 first_names = ["Davis", "Pakhi", "Cesar", "Shivangi", "Aaron", "Siraj", "Abdu", "Rishin", "Tejal", "Shrirang", "Sunny"]
 last_names = ["Keene", "Gupta", "Monsalud", "Sharma", "Alberg", "Chokshi", "Alawini", "Pandit", "Athreya", "Bangdati", "Dange"]
 
-def add_student(email, first_name, last_name, classroom_id, student_id=generate_id(generate_random_word(50)), points_earned, points_total):
+def add_student(email, first_name, last_name, classroom_id, points_earned, points_total, student_id=generate_id(generate_random_word(50))):
     """
     Adds a student to the database. 
     
