@@ -90,9 +90,27 @@ def add_teacher(email, first_name, last_name, classroom_id, teacher_id=generate_
 first_names = ["Davis", "Pakhi", "Cesar", "Shivangi", "Aaron", "Siraj", "Abdu", "Rishin", "Tejal", "Shrirang", "Sunny"]
 last_names = ["Keene", "Gupta", "Monsalud", "Sharma", "Alberg", "Chokshi", "Alawini", "Pandit", "Athreya", "Bangdati", "Dange"]
 
-def add_student(email, first_name, last_name, points_earned, points_total, classroom_id, student_id=generate_id(generate_random_word(50))):
-    # EXAMPLE FUNCTION. Does nothing.
-    print(f"Added student {first_name} {last_name}.")
+def add_student(email, first_name, last_name, classroom_id, student_id=generate_id(generate_random_word(50)), points_earned, points_total):
+    """
+    Adds a student to the database. 
+    
+    If no student_id is specified, then we will create one.
+    """
+    if (email is None or first_name is None or last_name is None or classroom_id is None or points_earned is None or points_total is None):
+        print("Missing one or more necessary fields.")
+        return
+    
+    # Put all data from arguments into a tuple
+    data_student = (student_id, email, first_name, last_name, points_earned, points_total, classroom_id)
+    # Execute query
+    cursor.execute(add_student_q, data_student)
+
+    # Make sure data is committed to the database
+    cnx.commit()
+
+    # Close connections
+    cursor.close()
+    cnx.close()
 
 # Example code for adding students
 for i in range(100):
