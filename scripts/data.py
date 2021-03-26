@@ -52,7 +52,7 @@ add_teacher_q = ("INSERT INTO teachers "
               "VALUES (%s, %s, %s, %s, %s)")
 
 add_assignment_q = ("INSERT INTO assignments "
-              "(assignment_id, assignment_name, assignment_description, assignment_points, code, test_cases, classroom_id)"
+              "(assignment_id, assignment_name, assignment_description, assignment_points, assignment_code, assignment_test_cases, classroom_id)"
               "VALUES (%s, %s, %s, %s, %s, %s, %s)")
 
 add_assignment_grade_q = ("INSERT INTO assignments "
@@ -134,20 +134,20 @@ def add_classroom(classroom_name, classroom_description, classroom_id=generate_i
     cursor.close()
     cnx.close()
     
-def add_assignment(name, description, available_points, code, test_cases, classroom_id, assignment_id=generate_id(generate_random_word(50))):
+def add_assignment(assignment_name, assignment_description, assignment_points, assignment_code, assignment_test_cases, classroom_id, assignment_id=generate_id(generate_random_word(50))):
     """
     Adds an assignment to the database. 
     
     If no assignment_id is specified, then we will create one.
     """
-    if (name is None or description is None or available_points is None or code is None or test_cases is None):
+    if (assignment_name is None or assignment_description is None or assignment_points is None or assignment_code is None or assignment_test_cases is None or classroom_id is None or assignment_id is None):
         print("Missing one or more necessary fields.")
         return
     
     # Put all data from arguments into a tuple
-    data_assignment = (assignment_id, name, description, available_points, code, test_cases, classroom_id)
+    data_assignment = (assignment_id, assignment_name, assignment_description, assignment_points, assignment_code, assignment_test_cases, classroom_id)
     # Execute query
-    cursor.execute(add_student_q, data_assignment)
+    cursor.execute(add_assignment_q, data_assignment)
 
     # Make sure data is committed to the database
     cnx.commit()
