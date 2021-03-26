@@ -87,4 +87,35 @@ def add_teacher(email, first_name, last_name, classroom_id, teacher_id=generate_
     cursor.close()
     cnx.close()
 
+first_names = ["Davis", "Pakhi", "Cesar", "Shivangi", "Aaron", "Siraj", "Abdu", "Rishin", "Tejal", "Shrirang", "Sunny"]
+last_names = ["Keene", "Gupta", "Monsalud", "Sharma", "Alberg", "Chokshi", "Alawini", "Pandit", "Athreya", "Bangdati", "Dange"]
+
+def add_student(email, first_name, last_name, points_earned, points_total, classroom_id, student_id=generate_id(generate_random_word(50))):
+    # EXAMPLE FUNCTION. Does nothing.
+    print(f"Added student {first_name} {last_name}.")
+
+# Example code for adding students
+for i in range(100):
+    first_name = random.choice(first_names)
+    last_name = random.choice(last_names)
+
+    email = f'{first_name.lower()}@gmail.com'
+
+    classroom_id = 4111  # default classroom id
+
+    points_earned = 0
+    points_total = 0
+
+    # call add_student
+    add_student(
+        email=email,
+        first_name=first_name, 
+        last_name=last_name, 
+        points_earned=points_earned, 
+        points_total=points_total, 
+        classroom_id=classroom_id
+    )
+
+
+
 # add_teacher(email="test@gmail.com", first_name="testy", last_name="mctest", classroom_id=4111)
