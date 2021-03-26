@@ -55,7 +55,7 @@ add_assignment_q = ("INSERT INTO assignments "
               "(assignment_id, assignment_name, assignment_description, assignment_points, assignment_code, assignment_test_cases, classroom_id)"
               "VALUES (%s, %s, %s, %s, %s, %s, %s)")
 
-add_assignment_grade_q = ("INSERT INTO assignments "
+add_assignment_grade_q = ("INSERT INTO assignment_grade "
               "(assignment_grade_id, assignment_id, student_id, points_earned, points_total)"
               "VALUES (%s, %s, %s, %s, %s)")
 
