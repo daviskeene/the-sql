@@ -144,7 +144,7 @@ def add_assignment_grade(cnx, cursor, assignment_id, student_id, points_earned, 
         print("Missing one or more necessary fields.")
         return
 
-    add_assignment_grade_q = ("INSERT INTO assignment_grade "
+    add_assignment_grade_q = ("INSERT INTO assignment_grades "
               "(assignment_grade_id, assignment_id, student_id, points_earned, points_total)"
               "VALUES (%s, %s, %s, %s, %s)")
 
@@ -213,6 +213,35 @@ def add_random_students(cnx, cursor, n, classroom):
         )
 
 
+def add_assignment_grades_bulk(cnx, cursor, classroom_id):
+    """
+    Populate the database with random assignment grade(s) for students.
+    """
+
+    # First, get all studentID's in a given classroom
+    cursor.execute(f'SELECT student_id FROM students WHERE classroom_id = {classroom_id};')
+    student_ids = cursor.fetchall()
+
+    for student_id in student_ids:
+        # Next, get all assignments in this classroom.
+        query = f'SELECT assignment_id FROM assignments WHERE classroom_id = {classroom_id};'
+        cursor.execute(query)
+        assignment_ids = cursor.fetchall()
+        for assignment_id in assignment_ids:
+            # Add one Assignment Grade per assignment per student.
+
+            # Get the maximum amount of points for this assignment
+            cursor.execute(f'SELECT assignment_points FROM assignments WHERE assignment_id = {assignment_id[0]};')
+            assignment_points = cursor.fetchall()[0]
+
+            points_earned = random.choice([x for x in range(assignment_points[0])])
+            # print(assignment_id[0], student_id[0], points_earned, assignment_points[0])
+            assignment_grade_id = generate_id(generate_random_word(50))
+            add_assignment_grade(cnx, cursor, assignment_id[0], student_id[0], points_earned, assignment_points[0], assignment_grade_id)
+
+
+
+
 ###
 #
 # Functions for data cleanup (modify / remove rows).
@@ -253,7 +282,8 @@ if __name__ == "__main__":
     ### YOUR CODE HERE
     # add_teacher(cnx, cursor, "davisk2@illinois.edu", "Davis", "Keene", classroom_id)
     # remove_row(cnx, cursor, 'teachers', '7982699')
-
+    # add_assignment(cnx, cursor, "Update University Database", "As a Database Administrator, you are responsible for updating the information in the university database. Some changes are made to the course with CRN 243. The Credits for this course are changed to 3 and the current Instructor has been replaced by Professor 'Ron Spectre'. Update the records in the Courses and Enrollments tables. A new student named 'Elizabeth Viara' has joined the 'CS' department. Her NetId is 'eviara1'. She took the course with CRN 243 for 3 credits and got a Score of 85. Update her Students and Enrollments records. Finally, print out the CRN and Title of all 200-level courses (200 <= CRN < 300) along with the total number of students enrolled in each course. Order the results in descending order of CRN.", 10, '', '', classroom_id)
+    # add_assignment_grades_bulk(cnx, cursor, classroom_id)
     # Close connections
     cursor.close()
     cnx.close()
