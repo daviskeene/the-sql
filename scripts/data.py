@@ -261,6 +261,20 @@ def remove_row(cnx, cursor, table_name, row_id):
     cnx.commit()
 
 
+def advanced_query(cnx, cursor):
+    """
+    Writing an advanced data query on this particular dataset.
+
+    @author: Davis Keene
+    """
+    query = ''
+    cursor.execute(query)
+
+    results = cursor.fetchall()
+
+    return results
+
+
 ###
 #
 # Code that executes after running:
