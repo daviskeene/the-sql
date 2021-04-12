@@ -6,6 +6,9 @@ const FormWrapper = styled.div`
   html {
     font-size: 16px;
   }
+
+  text-align: center;
+  content-align: center;
   
   body {
     font: 100% / 1.414 sans-serif;
@@ -178,6 +181,154 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
+const SearchBoxWrapper = styled.div`
+    text-align: center;
+    margin-top: 5%;
+
+`
+
+class SearchBox extends Component {
+  constructor(props) {
+      super(props)
+
+      this.onChangeSearchQuery = this.onChangeSearchQuery.bind(this);
+      this.onChangeResults = this.onChangeResults.bind(this);
+      this.onSubmit = this.onSubmit.bind(this);
+
+      this.state = {
+          searchQuery: '',
+          results: []
+      }
+  }
+
+  onChangeSearchQuery(e) {
+      this.setState({ searchQuery : e.target.value })
+  }
+
+  onChangeResults(e) {
+      this.setState({ results : e.target.value })
+  }
+
+  onSubmit(e) {
+      e.preventDefault()
+      console.log(e);
+
+      axios.get(`http://localhost:8000/classrooms/?search=${this.state.searchQuery}`)
+      .then((res) => {
+          console.log(res.data)
+          this.setState({ results: res.data })
+      }).catch((error) => {
+          console.log(error)
+      });
+  }
+
+  render() {
+      return (
+          <div>
+          <form onSubmit={this.onSubmit}>
+                  <div className="form-group">
+                      <input type="text" value={this.state.searchQuery} onChange={this.onChangeSearchQuery} className="form-control" />
+                  </div>
+                  <div className="form-group">
+                      <input type="submit" value="Search Query" className="btn btn-success btn-block" />
+                  </div>
+          </form>
+
+          {(this.state.results.length > 0 ? (this.state.results.map((classroom) => (
+              <ClassroomCard classroom={classroom} key={classroom.classroom_id} />
+          ))) : 'No results found!')}
+          </div>
+
+      )
+  }
+}
+
+
+const TableWrapper = styled.div`
+table {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+td th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2;}
+
+tr:hover {background-color: #ddd;}
+
+th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: white;
+  color: black;
+}
+
+`
+
+class AdvancedQueryTable extends Component {
+  constructor(props) {
+    super(props)
+
+    this.onSubmit = this.onSubmit.bind(this);
+
+    this.state = {
+      results: {}
+    }
+  }
+
+  onSubmit(e) {
+    e.preventDefault();
+    console.log(e);
+
+    // make a request to the appropriate endpoint
+    axios.get(`http://localhost:8000/davis/`)
+      .then((res) => {
+          console.log(res.data)
+          this.setState({ results: res.data })
+      }).catch((error) => {
+          console.log(error)
+      });
+  }
+
+  render() {
+
+    const names = Object.keys(this.state.results);
+    const averages = Object.values(this.state.results);
+
+    return (
+      <>
+      <form onSubmit={this.onSubmit}>
+        <div className="form-group">
+            <input type="submit" value="Run Advanced Query" className="btn btn-success btn-block" />
+        </div>
+      </form>
+
+        <TableWrapper>
+          <table>
+          <tr>
+            <th> Name </th>
+            <th> Average Score on Assignments </th>
+          </tr>
+          {names.map((name, i) => (
+            <tr>
+              <td>{name}</td>
+              <td>{averages[i]}</td>
+            </tr>
+          ))
+          }
+        </table>
+      </TableWrapper>
+      </>
+    )
+  }
+}
+
+
 class CreateClassroom extends Component {
 
     constructor(props) {
@@ -250,6 +401,7 @@ class CreateClassroom extends Component {
     render() {
         return (
             <FormWrapper>
+              <h1>Classrooms (Davis)</h1>
               <FormsWrapper>
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">
@@ -299,6 +451,12 @@ class CreateClassroom extends Component {
                 <FeedWrapper>
                   <Feed />
                 </FeedWrapper>
+
+                <SearchBoxWrapper>
+                    <SearchBox />
+                </SearchBoxWrapper>
+
+                <AdvancedQueryTable />
             </FormWrapper>
         )
     }

@@ -113,7 +113,7 @@ def advanced_query_pakhi(request):
             results = cursor.fetchall()
             print(results)
             retval = {}
-            for i, row in results:
+            for row in results:
                 assignment_name = row[0]
                 avg_grade = row[1]
                 retval.update({

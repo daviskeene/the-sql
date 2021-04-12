@@ -6,6 +6,8 @@ const FormWrapper = styled.div`
   html {
     font-size: 16px;
   }
+
+  text-align: center;
   
   body {
     font: 100% / 1.414 sans-serif;
@@ -222,7 +224,6 @@ class SearchBox extends Component {
     render() {
         return (
             <div>
-            <h3>Search</h3>
             <form onSubmit={this.onSubmit}>
                     <div className="form-group">
                         <input type="text" value={this.state.searchQuery} onChange={this.onChangeSearchQuery} className="form-control" />
@@ -239,6 +240,90 @@ class SearchBox extends Component {
 
         )
     }
+}
+
+const TableWrapper = styled.div`
+table {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+td th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2;}
+
+tr:hover {background-color: #ddd;}
+
+th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: white;
+  color: black;
+}
+
+`
+
+class AdvancedQueryTable extends Component {
+  constructor(props) {
+    super(props)
+
+    this.onSubmit = this.onSubmit.bind(this);
+
+    this.state = {
+      results: {}
+    }
+  }
+
+  onSubmit(e) {
+    e.preventDefault();
+    console.log(e);
+
+    // make a request to the appropriate endpoint
+    axios.get(`http://localhost:8000/pakhi/`)
+      .then((res) => {
+          console.log(res.data)
+          this.setState({ results: res.data })
+      }).catch((error) => {
+          console.log(error)
+      });
+  }
+
+  render() {
+
+    const names = Object.keys(this.state.results);
+    const averages = Object.values(this.state.results);
+
+    return (
+      <>
+      <form onSubmit={this.onSubmit}>
+        <div className="form-group">
+            <input type="submit" value="Run Advanced Query" className="btn btn-success btn-block" />
+        </div>
+      </form>
+
+        <TableWrapper>
+          <table>
+          <tr>
+            <th> Name of Assignment </th>
+            <th> Average Score on Assignment </th>
+          </tr>
+          {names.map((name, i) => (
+            <tr>
+              <td>{name}</td>
+              <td>{averages[i]}</td>
+            </tr>
+          ))
+          }
+        </table>
+      </TableWrapper>
+      </>
+    )
+  }
 }
 
 class CreateStudent extends Component {
@@ -323,6 +408,7 @@ class CreateStudent extends Component {
  render() {
         return (
             <FormWrapper>
+            <h1>Students (Pakhi)</h1>
               <FormsWrapper>
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">
@@ -386,6 +472,8 @@ class CreateStudent extends Component {
                 <SearchBoxWrapper>
                     <SearchBox />
                 </SearchBoxWrapper>
+
+                <AdvancedQueryTable />
             </FormWrapper>
         )
     }

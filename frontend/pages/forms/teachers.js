@@ -6,6 +6,8 @@ const FormWrapper = styled.div`
   html {
     font-size: 16px;
   }
+
+  text-align: center;
   
   body {
     font: 100% / 1.414 sans-serif;
@@ -181,6 +183,68 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
+const SearchBoxWrapper = styled.div`
+    text-align: center;
+    margin-top: 5%;
+
+`
+
+class SearchBox extends Component {
+    constructor(props) {
+        super(props)
+
+        this.onChangeSearchQuery = this.onChangeSearchQuery.bind(this);
+        this.onChangeResults = this.onChangeResults.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
+
+        this.state = {
+            searchQuery: '',
+            results: []
+        }
+    }
+
+    onChangeSearchQuery(e) {
+        this.setState({ searchQuery : e.target.value })
+    }
+
+    onChangeResults(e) {
+        this.setState({ results : e.target.value })
+    }
+
+    onSubmit(e) {
+        e.preventDefault()
+        console.log(e);
+
+        axios.get(`http://localhost:8000/teachers/?search=${this.state.searchQuery}`)
+        .then((res) => {
+            console.log(res.data)
+            this.setState({ results: res.data })
+        }).catch((error) => {
+            console.log(error)
+        });
+    }
+
+    render() {
+        return (
+            <div>
+            <form onSubmit={this.onSubmit}>
+                    <div className="form-group">
+                        <input type="text" value={this.state.searchQuery} onChange={this.onChangeSearchQuery} className="form-control" />
+                    </div>
+                    <div className="form-group">
+                        <input type="submit" value="Search Query" className="btn btn-success btn-block" />
+                    </div>
+            </form>
+
+            {(this.state.results.length > 0 ? (this.state.results.map((teacher) => (
+                <TeacherCard teacher={teacher} key={teacher.teacher_id} />
+            ))) : 'No results found!')}
+            </div>
+
+        )
+    }
+}
+
 class Createteacher extends Component {
 
     constructor(props) {
@@ -269,6 +333,7 @@ class Createteacher extends Component {
     render() {
         return (
             <FormWrapper>
+                <h1>Teachers (Cesar)</h1>
               <FormsWrapper>
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">
@@ -333,6 +398,10 @@ class Createteacher extends Component {
                 <FeedWrapper>
                   <Feed />
                 </FeedWrapper>
+
+                <SearchBoxWrapper>
+                    <SearchBox />
+                </SearchBoxWrapper>
             </FormWrapper>
         )
     }
