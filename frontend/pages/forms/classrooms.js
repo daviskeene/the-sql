@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 
@@ -12,6 +12,7 @@ const FormWrapper = styled.div`
   }
   
   form {
+    margin-top: 10%;
     margin-right: auto;
     margin-left: auto;
     max-width: 320px;
@@ -36,7 +37,7 @@ const FormWrapper = styled.div`
   input:not([type=checkbox]):not([type=radio]),
   select,
   textarea {
-    padding: 8px;
+    padding: 16px;
     width: 100%;
     border-top: 0;
     border-right: 0;
@@ -63,7 +64,7 @@ const FormWrapper = styled.div`
     margin-right: auto;
     margin-left: auto;
     display: block;
-    padding: 8px 16px;
+    padding: 8px 16px 8px 8px;
     font-size: 16px;
     color: #fff;
     background-color: #3fc1c9;
@@ -87,13 +88,25 @@ const FormWrapper = styled.div`
   
 `
 
+const FormsWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+`
+
+const FeedWrapper = styled.div`
+
+  text-align: center;
+  margin-top: 5%;
+
+`
+
 const Feed = (props) => {
     const [classrooms, setClassrooms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
   
     // make request to API for classrooms
     useEffect(() => {
-      fetch(URL_ROOT + "/classrooms")
+      fetch("http://localhost:8000/classrooms/")
         .then((res) => res.json())
         // update state with classrooms
         .then((json) => {
@@ -112,28 +125,51 @@ const Feed = (props) => {
   
     // empty post load
     if (classrooms.length === 0) return <>No classrooms found!</>;
+
+    const refreshCards = () => {
+      console.log("refresh");
+      fetch("http://localhost:8000/classrooms/")
+        .then((res) => res.json())
+        // update state with classrooms
+        .then((json) => {
+          setClassrooms(json);
+          setIsLoading(false);
+        })
+        // log errors to console
+        .catch((err) => {
+          console.error(err);
+          setIsLoading(false);
+        });
+    }
   
     // display results
     return (
+      <>
       <div className="mentor-card-wrapper">
         {classrooms.map((classroom) => (
-          <ClassroomCard classroom={classroom} key={classroom.id} />
+          <ClassroomCard classroom={classroom} key={classroom.classroom_id} />
         ))}
       </div>
+
+      <button onClick={refreshCards}>Refresh</button>
+      </>
     );
   };
   
 const ClassroomCard = (props) => {
 
   // Classroom fields
-  const { classroomName, classroomDescription } = props.classroom;
+  console.log(props.classroom);
+  const { classroom_id, classroom_name, classroom_description} = props.classroom;
+
   return (
   // Render classroom fields in HTML
     <div className="mentor-card">
-      <h2>{classroomName}</h2>
+      <h2>{classroom_name} ({classroom_id})</h2>
       <p>
-        Description: <strong>{classroomDescription}</strong>
+        Description: <strong>{classroom_description}</strong>
       </p>
+
     </div>
   );
 };
@@ -147,14 +183,20 @@ class CreateClassroom extends Component {
     constructor(props) {
         super(props)
 
+        this.onChangeClassroomId = this.onChangeClassroomId.bind(this);
         this.onChangeClassroomName = this.onChangeClassroomName.bind(this);
         this.onChangeClassroomDescription = this.onChangeClassroomDescription.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
         this.state = {
+            classroomId: '',
             classroomName: '',
             classroomDescription: ''
         }
+    }
+
+    onChangeClassroomId(e) {
+      this.setState({ classroomId: e.target.value })
     }
 
     onChangeClassroomName(e) {
@@ -166,30 +208,49 @@ class CreateClassroom extends Component {
     }
 
     onSubmit(e) {
-        e.preventDefault()
+        e.preventDefault();
+        console.log(e);
+
+        const isCreate = this.state.classroomId === '';
+        const isDelete = this.state.classroomId !== '' && this.state.classroomName === '' && this.state.classroomDescription === '';
 
         const classroomObject = {
-            classroom_id: getRandomInt(100000),
+            classroom_id: (isCreate) ? getRandomInt(100000) : this.state.classroomId,
             classroom_name: this.state.classroomName,
             classroom_description: this.state.classroomDescription
         };
 
-        console.log(classroomObject);
-
-        axios.post('http://localhost:8000/classrooms/', classroomObject)
-            .then((res) => {
-                console.log(res.data)
-            }).catch((error) => {
-                console.log(error)
-            });
-
-        this.setState({ classroomName: '', classroomDescription: '' })
+        if (isDelete) {
+          axios.delete(`http://localhost:8000/classrooms/${this.state.classroomId}/`)
+          .then((res) => {
+              console.log(res.data)
+          }).catch((error) => {
+              console.log(error)
+          });
+        }
+        else if (isCreate) {
+          axios.post('http://localhost:8000/classrooms/', classroomObject)
+          .then((res) => {
+              console.log(res.data)
+          }).catch((error) => {
+              console.log(error)
+          });
+      } else {
+        axios.put(`http://localhost:8000/classrooms/${this.state.classroomId}/`, classroomObject)
+          .then((res) => {
+              console.log(res.data)
+          }).catch((error) => {
+              console.log(error)
+          });
+      }
+      this.setState({ classroomId: '', classroomName: '', classroomDescription: '' })
     }
 
 
     render() {
         return (
-            <div className="wrapper">
+            <FormWrapper>
+              <FormsWrapper>
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">
                         <label>Classroom Name</label>
@@ -203,7 +264,44 @@ class CreateClassroom extends Component {
                         <input type="submit" value="Create Classroom" className="btn btn-success btn-block" />
                     </div>
                 </form>
-            </div>
+
+                <form onSubmit={this.onSubmit}>
+                  <div className="form-group">
+                        <label>Classroom ID</label>
+                        <input type="text" value={this.state.classroomId} onChange={this.onChangeClassroomId} className="form-control" />
+                    </div>
+                    <div className="form-group">
+                        <label>Classroom Name</label>
+                        <input type="text" value={this.state.classroomName} onChange={this.onChangeClassroomName} className="form-control" />
+                    </div>
+                    <div className="form-group">
+                        <label>Classroom Description</label>
+                        <input type="text" value={this.state.classroomDescription} onChange={this.onChangeClassroomDescription} className="form-control" />
+                    </div>
+                    <div className="form-group">
+                        <input type="submit" value="Update Classroom" className="btn btn-success btn-block" />
+                    </div>
+                </form>
+
+
+                <form onSubmit={this.onSubmit}>
+                  <div className="form-group">
+                        <label>Classroom ID</label>
+                        <input type="text" value={this.state.classroomId} onChange={this.onChangeClassroomId} className="form-control" />
+                  </div>
+
+                  <div className="form-group">
+                      <input type="submit" value="Delete Classroom" className="btn btn-success btn-block" />
+                  </div>
+                </form>
+
+
+                </FormsWrapper>
+
+                <FeedWrapper>
+                  <Feed />
+                </FeedWrapper>
+            </FormWrapper>
         )
     }
 }
