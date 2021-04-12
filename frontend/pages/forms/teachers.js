@@ -198,7 +198,7 @@ class Createteacher extends Component {
             teacherFName: '',
             teacherLName: '',
             teacherEmail: '',
-            classroom: ''
+            classroom: 77273
         }
     }
 
@@ -262,7 +262,7 @@ class Createteacher extends Component {
               console.log(error)
           });
       }
-      this.setState({ teacherId: '', teacherFName: '', teacherLName: '', teacherDescription: '', classroom: '' })
+      this.setState({ teacherId: '', teacherFName: '', teacherLName: '', teacherDescription: '', classroom: 77273 })
     }
 
 
