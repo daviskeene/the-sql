@@ -160,7 +160,7 @@ const TeacherCard = (props) => {
 
   // teacher fields
   console.log(props.teacher);
-  const { teacher_id, first_name, last_name, email} = props.teacher;
+  const { teacher_id, first_name, last_name, email, classroom} = props.teacher;
 
   return (
   // Render teacher fields in HTML
@@ -168,6 +168,9 @@ const TeacherCard = (props) => {
       <h2>{first_name} {last_name} ({teacher_id})</h2>
       <p>
         Email: <strong>{email}</strong>
+      </p>
+      <p>
+          Classroom: <strong>{classroom}</strong>
       </p>
 
     </div>

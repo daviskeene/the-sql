@@ -159,13 +159,16 @@ const StudentCard = (props) => {
 
   // Student fields
   console.log(props.student);
-  const { student_id, email, first_name, last_name} = props.student;
+  const { student_id, email, first_name, last_name, classroom} = props.student;
   return (
   // Render student fields in HTML
     <div className="mentor-card">
       <h2>{first_name} {last_name} ({student_id})</h2>
       <p>
         Email: <strong>{email}</strong>
+      </p>
+      <p>
+          Classroom: <strong>{classroom}</strong>
       </p>
     </div>
   );

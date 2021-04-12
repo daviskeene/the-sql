@@ -15,7 +15,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('davis/', views.advanced_query_davis, name='davis'),
-    path('cesar/', views.advanced_query_davis, name='cesar'),
-    path('pakhi/', views.advanced_query_davis, name='pakhi'),
-    path('shivangi/', views.advanced_query_davis, name='shivangi'),
+    path('cesar/', views.advanced_query_cesar, name='cesar'),
+    path('pakhi/', views.advanced_query_pakhi, name='pakhi'),
+    path('shivangi/', views.advanced_query_shivangi, name='shivangi'),
 ]

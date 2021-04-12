@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, filters
 from django.db import connection
+from django.http import JsonResponse
 
 from .serializers import StudentSerializer, TeacherSerializer, AssignmentSerializer, AssignmentGradeSerializer, ClassroomSerializer
 from .models import Student, Teacher, Assignment, AssignmentGrade, Classroom
@@ -58,9 +59,14 @@ def advanced_query_davis(request):
         cursor.execute(query)
         results = cursor.fetchall()
         print(results)
+        retval = {}
+        for row in results:
+            first_name, last_name, avg = row
+            retval.update({f'{first_name} {last_name}': float(avg)})
         cursor.close()
+        return JsonResponse(retval)
 
-def advnaced_query_shivangi(request):
+def advanced_query_shivangi(request):
         with connection.cursor() as cursor:
             query = (
         """SELECT b.Classroom_ID, b.avgStudents
@@ -77,7 +83,11 @@ def advnaced_query_shivangi(request):
             cursor.execute(query)
             results = cursor.fetchall()
             print(results)
+            retval = {}
+            for row in results:
+                retval.update({row[0]: int(row[1])})
             cursor.close()
+            return JsonResponse(retval)
 
 def advanced_query_cesar(request):
         with connection.cursor() as cursor:
@@ -90,7 +100,6 @@ def advanced_query_cesar(request):
             cursor.execute(query)
             results = cursor.fetchall()
             print(results)
-            cursor.close()
 
 def advanced_query_pakhi(request):
         with connection.cursor() as cursor:
@@ -103,4 +112,12 @@ def advanced_query_pakhi(request):
             cursor.execute(query)
             results = cursor.fetchall()
             print(results)
+            retval = {}
+            for i, row in results:
+                assignment_name = row[0]
+                avg_grade = row[1]
+                retval.update({
+                    assignment_name: float(avg_grade)
+                })
             cursor.close()
+            return JsonResponse(retval)
