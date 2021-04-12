@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets, filters
+from django.db import connection
 
 from .serializers import StudentSerializer, TeacherSerializer, AssignmentSerializer, AssignmentGradeSerializer, ClassroomSerializer
 from .models import Student, Teacher, Assignment, AssignmentGrade, Classroom
@@ -44,3 +45,62 @@ class ClassroomViewSet(viewsets.ModelViewSet):
 
     queryset = Classroom.objects.all()
     serializer_class = ClassroomSerializer
+
+
+def advanced_query_davis(request):
+    with connection.cursor() as cursor:
+        query = (
+    """SELECT st.first_name as First_Name, st.last_name as Last_Name, SUM(ag.points_earned)/SUM(ag.points_total) as Average_Grade_On_Assignments
+    FROM test.thesql_student st JOIN test.thesql_assignmentgrade ag ON st.student_id = ag.student_id
+    GROUP BY st.student_id
+    ORDER BY Average_Grade_On_Assignments desc
+    LIMIT 15;""")
+        cursor.execute(query)
+        results = cursor.fetchall()
+        print(results)
+        cursor.close()
+
+def advnaced_query_shivangi(request):
+        with connection.cursor() as cursor:
+            query = (
+        """SELECT b.Classroom_ID, b.avgStudents
+        FROM ( SELECT CEILING(SUM(a.stu_ids)/COUNT(a.class)) as avgStudents, a.class as Classroom_ID
+            FROM ( SELECT COUNT(s.student_id) as stu_ids, c.classroom_id as class
+                FROM test.thesql_student s JOIN test.thesql_classroom c ON s.classroom_id = c.classroom_id
+            GROUP BY c.classroom_id
+        ORDER BY c.classroom_id) as a
+
+        GROUP BY a.class ) as b
+
+        ORDER BY b.avgStudents desc
+        LIMIT 15;""")
+            cursor.execute(query)
+            results = cursor.fetchall()
+            print(results)
+            cursor.close()
+
+def advanced_query_cesar(request):
+        with connection.cursor() as cursor:
+            query = (
+        """SELECT st.first_name as First_Name, st.last_name as Last_Name, SUM(ag.points_earned)/SUM(ag.points_total) as Average_Grade_On_Assignments
+        FROM test.thesql_student st JOIN test.thesql_assignmentgrade ag ON st.student_id = ag.student_id
+        GROUP BY st.student_id
+        ORDER BY Average_Grade_On_Assignments desc
+        LIMIT 15;""")
+            cursor.execute(query)
+            results = cursor.fetchall()
+            print(results)
+            cursor.close()
+
+def advanced_query_pakhi(request):
+        with connection.cursor() as cursor:
+            query = (
+        """SELECT am.assignment_name Assigment_Name, ((SUM(ag.points_earned)/SUM(ag.points_total))*100) as Average_Grade
+    FROM test.thesql_assignment am JOIN test.thesql_assignmentgrade ag ON am.assignment_id = ag.assignment_id
+    GROUP BY am.assignment_id
+    ORDER BY Average_Grade desc
+    LIMIT 15;""")
+            cursor.execute(query)
+            results = cursor.fetchall()
+            print(results)
+            cursor.close()

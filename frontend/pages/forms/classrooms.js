@@ -294,8 +294,6 @@ class CreateClassroom extends Component {
                       <input type="submit" value="Delete Classroom" className="btn btn-success btn-block" />
                   </div>
                 </form>
-
-
                 </FormsWrapper>
 
                 <FeedWrapper>
