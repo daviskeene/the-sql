@@ -2,3 +2,6 @@ mysql-connector-python
 flask
 flask_sqlalchemy
 numpy
+djangorestframework
+markdown
+django-filter
