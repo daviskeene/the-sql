@@ -121,6 +121,32 @@ def grade_assignment(request):
         "points_earned": points_earned
     })
 
+
+def run_query(request):
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+
+    query = body['query']
+
+    with connection.cursor() as cur:
+        if validate_query(query):
+            cur.execute(query)
+            ## TODO: Pretty format the response
+            result = cur.fetchall()
+            outputarr = []
+            for row in result:
+                output = ''
+                for word in row:
+                    if output == '':
+                        output = output + str(word)
+                    else:
+                        output = output + ' , ' + str(word)
+                outputarr.append(output)
+
+    return JsonResponse({
+        "result": outputarr
+    })
+
 ###
 #
 # ADVANCED QUERIES
