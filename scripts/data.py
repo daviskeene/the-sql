@@ -253,7 +253,7 @@ def remove_row(cnx, cursor, table_name, row_id):
     """
     Remove a row entry given a table name and primary key id.
     """
-    remove_q = (f"DELETE FROM {table_name} WHERE {table_name[:-1]}_id = {row_id};")
+    remove_q = (f"DELETE FROM {table_name} WHERE {table_name}_id = {row_id};")
     # Execute query
     cursor.execute(remove_q)
     
@@ -417,6 +417,7 @@ if __name__ == "__main__":
     # add_assignment_grades_bulk(cnx, cursor, classroom_id)
     # add_assignments(cnx, cursor, 996)
     # add_students(cnx, cursor, 10)
+    remove_row(cnx, cursor, 'thesql_student', '11495')
 
     # Close connections
     cursor.close()

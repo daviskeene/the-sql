@@ -73,5 +73,9 @@ def validate_query(query):
     return True  # default
 
 
+def generate_random_number(length):
+    import random
+    return int(random.random() * length)
+
 if __name__ == "__main__":
     generate_test_cases('SELECT * from thesql_classrooms')

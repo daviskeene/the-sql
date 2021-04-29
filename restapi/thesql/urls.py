@@ -1,4 +1,5 @@
 from django.urls import include, path
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import routers
 from . import views
 
@@ -18,5 +19,5 @@ urlpatterns = [
     path('cesar/', views.advanced_query_cesar, name='cesar'),
     path('pakhi/', views.advanced_query_pakhi, name='pakhi'),
     path('shivangi/', views.advanced_query_shivangi, name='shivangi'),
-    path('/grade/', views.grade_assignment, name='grade')
+    path('grade/', csrf_exempt(views.grade_assignment), name='grade')
 ]

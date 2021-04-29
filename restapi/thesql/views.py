@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, filters
 from django.db import connection
 from django.http import JsonResponse
+import json
 
 from .serializers import StudentSerializer, TeacherSerializer, AssignmentSerializer, AssignmentGradeSerializer, ClassroomSerializer
 from .models import Student, Teacher, Assignment, AssignmentGrade, Classroom
@@ -60,9 +61,17 @@ def grade_assignment(request):
     """
     Grade an assignment and return the response.
     """
-    email, query, assigment_id = [request.POST.get('email'), request.POST.get('query'), request.POST.get('assignment_id')]
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+
+    email, query, assigment_id = body['email'], body['query'], body['assignment_id']
+
+    print(email)
+    print(query)
+    print(assigment_id)
+
     student = Student.objects.get(email=email)
-    assignment = Assignment.objects.get(id=assigment_id)
+    assignment = Assignment.objects.get(assignment_id=assigment_id)
 
     if assignment is None or student is None:
         print("Assignment or Student is invalid!")
@@ -87,7 +96,18 @@ def grade_assignment(request):
 
     points_earned = int((num_correct / len(test_cases)) * assignment.assignment_points)
 
-    assignment_grade, created = AssignmentGrade.objects.get_or_create(student=student, assignment=assignment)
+    assignment_grade = AssignmentGrade.objects.filter(student=student, assignment=assignment)  # type: list
+    print(assignment_grade)
+
+    if not assignment_grade:
+        # If the assignment grade isn't created, make one
+        assignment_grade = AssignmentGrade.objects.create(student=student, assignment=assignment,
+                                                          assignment_grade_id=generate_random_number(10))
+    else:
+        assignment_grade = assignment_grade[0]
+
+    print(assignment_grade)
+
     assignment_grade.points_total = assignment.assignment_points
 
     if assignment_grade.points_earned < points_earned:
@@ -100,7 +120,6 @@ def grade_assignment(request):
         "points_total": assignment.assignment_points,
         "points_earned": points_earned
     })
-    # Break up the request first.
 
 ###
 #
