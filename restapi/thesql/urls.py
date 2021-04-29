@@ -18,4 +18,5 @@ urlpatterns = [
     path('cesar/', views.advanced_query_cesar, name='cesar'),
     path('pakhi/', views.advanced_query_pakhi, name='pakhi'),
     path('shivangi/', views.advanced_query_shivangi, name='shivangi'),
+    path('/grade/', views.grade_assignment, name='grade')
 ]

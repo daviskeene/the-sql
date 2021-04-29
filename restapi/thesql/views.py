@@ -5,6 +5,8 @@ from django.http import JsonResponse
 
 from .serializers import StudentSerializer, TeacherSerializer, AssignmentSerializer, AssignmentGradeSerializer, ClassroomSerializer
 from .models import Student, Teacher, Assignment, AssignmentGrade, Classroom
+from .grading.grading_utils import *
+
 # Create your views here.
 
 
@@ -48,6 +50,65 @@ class ClassroomViewSet(viewsets.ModelViewSet):
     serializer_class = ClassroomSerializer
 
 
+###
+#
+# GRADING ENDPOINTS
+#
+###
+
+def grade_assignment(request):
+    """
+    Grade an assignment and return the response.
+    """
+    email, query, assigment_id = [request.POST.get('email'), request.POST.get('query'), request.POST.get('assignment_id')]
+    student = Student.objects.get(email=email)
+    assignment = Assignment.objects.get(id=assigment_id)
+
+    if assignment is None or student is None:
+        print("Assignment or Student is invalid!")
+        return JsonResponse({
+            "error": f"Assignment or Student is invalid! a - {assignment}, s - {student}"
+        })
+
+    test_cases = parse_test_cases(assignment.assignment_test_cases) # array of expected row values (as str)
+    num_correct = 0
+    with connection.cursor() as cur:
+        # validate the query
+        if validate_query(query):
+            cur.execute(query)
+            results = cur.fetchall()
+            for i, row in enumerate(results):
+                test_row = test_cases[i]
+                str_row = [str(x) for x in row]  # cast all elements in the result to a string
+                num_same = len(set(test_row).union(str_row))
+
+                if num_same == len(test_row):
+                    num_correct += 1
+
+    points_earned = int((num_correct / len(test_cases)) * assignment.assignment_points)
+
+    assignment_grade, created = AssignmentGrade.objects.get_or_create(student=student, assignment=assignment)
+    assignment_grade.points_total = assignment.assignment_points
+
+    if assignment_grade.points_earned < points_earned:
+        assignment_grade.points_earned = points_earned
+
+    assignment_grade.save()  # commit to database
+
+    return JsonResponse({
+        "status": "success",
+        "points_total": assignment.assignment_points,
+        "points_earned": points_earned
+    })
+    # Break up the request first.
+
+###
+#
+# ADVANCED QUERIES
+#
+###
+
+
 def advanced_query_davis(request):
     with connection.cursor() as cursor:
         query = (
@@ -65,6 +126,7 @@ def advanced_query_davis(request):
             retval.update({f'{first_name} {last_name}': float(avg)})
         cursor.close()
         return JsonResponse(retval)
+
 
 def advanced_query_shivangi(request):
         with connection.cursor() as cursor:
@@ -89,6 +151,7 @@ def advanced_query_shivangi(request):
             cursor.close()
             return JsonResponse(retval)
 
+
 def advanced_query_cesar(request):
         with connection.cursor() as cursor:
             query = (
@@ -100,6 +163,7 @@ def advanced_query_cesar(request):
             cursor.execute(query)
             results = cursor.fetchall()
             print(results)
+
 
 def advanced_query_pakhi(request):
         with connection.cursor() as cursor:

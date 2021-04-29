@@ -404,6 +404,9 @@ if __name__ == "__main__":
     
     cursor = cnx.cursor()
 
+    cursor.execute('SELECT * FROM thesql_classroom')
+    print('%<>%'.join(str(x) for x in cursor.fetchall()))
+
     ### YOUR CODE HERE
     classroom_id = 77273
     # add_classroom(cnx, cursor, "CS 411: Database Systems B", "Section B of CS 411: Database Systems", classroom_id=4111)
