@@ -1,14 +1,12 @@
 import React from 'react';
 import styled from "styled-components";
-import Typist from 'react-typist';
 import Particles from "react-particles-js";
-import AceEditor from "react-ace";
 
-import "ace-builds/src-noconflict/mode-sql";
-import "ace-builds/src-noconflict/theme-github";
-import { Ace } from 'ace-builds';
+import dynamic from 'next/dynamic'
 
-import CodeSandbox from '../CodeSandbox';
+const CodeSandbox = dynamic(import('../CodeSandbox'), {
+  ssr: false
+})
 
 const HeroPrimaryWrapper = styled.div`
     height: 54rem;
@@ -19,7 +17,7 @@ const HeroPrimaryWrapper = styled.div`
     color: white;
 `;
 
-const BackgroundParticles = (props) => {
+export const BackgroundParticles = (props) => {
 
     return (
         <Particles
@@ -130,18 +128,8 @@ const ContentContainer = styled.div`
     }
 `
 
-const AceContainer = styled.div`
-    position: absolute;
-
-    left: 50%;
-    right: 0;
-    bottom: 0;
-    top: 25%;
-
-    height: 4rem;
-`
-
 const HeroPrimary = (props) => {
+
     return (
         <HeroPrimaryWrapper>
             <BackgroundParticles />
@@ -158,7 +146,8 @@ const HeroPrimary = (props) => {
                 </button>
             </ContentContainer>
 
-            <CodeSandbox height={'20vh'} width={'30vw'} name={'homepage'} value={'SELECT * FROM Courses;'} />
+            <CodeSandbox height={'20vh'} width={'30vw'} left={'50%'} top={'25%'} name={'homepage'} value={'SELECT * FROM Courses;'} />
+
         </HeroPrimaryWrapper>
     )
 };

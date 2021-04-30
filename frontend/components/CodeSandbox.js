@@ -1,16 +1,18 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
-import AceEditor from 'react-ace'
-import { Ace } from 'ace-builds'
+import React, { useState } from 'react';
+import styled from "styled-components";
+import AceEditor from 'react-ace';
+import axios from 'axios';
 
+import "ace-builds/src-noconflict/mode-sql";
+import "ace-builds/src-noconflict/theme-github";
 
 const AceContainer = styled.div`
     position: absolute;
 
-    left: 50%;
+    left: ${props=>props.left};
     right: 0;
     bottom: 0;
-    top: 25%;
+    top: ${props=>props.top};
 
     textarea {
         position: absolute;
@@ -30,20 +32,53 @@ const AceContainer = styled.div`
     }
 
     .runnable {
-        color: green;
+        color: white;
         border: 1px solid green;
     }
 `
 
+const formatString = (string) => {
+    return string.join("\n")
+}
+
+const formatOutput = (data) => {
+    const gradePortion = data.points_earned + "/" + data.points_total + "\n"
+    const resultsPortion = data.result.join("\n")
+    return gradePortion + resultsPortion
+}
+
 const CodeSandbox = (props) => {
 
-    const [code, setCode] = useState(props.value ? props.value : "");
+    const [code, setCode] = useState(props.value);
+    const [result, setResult] = useState("");
+
+    const body = (props.isGradeable) ? {
+        "query": code,
+        "email": props.email,
+        "assignment_id": props.assignment_id
+    } : {
+        "query": code
+    }
+
+    const url = (props.isGradeable) ? `http://localhost:8000/grade/` : `http://localhost:8000/run/`
+
+    const getResults = (e) => {
+        // Grab text from the AceEditor
+        axios.post(url, body).then((res) => {
+            console.log(res.data)
+            setResult((props.isGradeable) ? formatOutput(res.data) : formatString(res.data.result))
+        }).catch((error) => {
+            console.log(error)
+        });
+    }
+
+    function onChange(newValue){
+        setCode(newValue);
+    }
 
     return(
-        <AceContainer width={props.width}>
-            <h2>
-                Try it out!
-            </h2>
+        <AceContainer width={props.width} left={props.left} top={props.top}>
+
             <AceEditor
                 mode="sql"
                 theme="github"
@@ -51,11 +86,14 @@ const CodeSandbox = (props) => {
                 editorProps={{ $blockScrolling: true }}
                 height={props.height}
                 width={props.width}
-                value={"SELECT * FROM Courses;"}
+                value={code}
+                onChange={onChange}
             />
-            <textarea className={'results'} />
-            <button className={'runnable'}>
-                Run me!
+
+            <textarea className={'results'} value={result}/>
+            
+            <button className={'runnable'} onClick={getResults}>
+                {props.isGradeable ? 'Grade me!' : 'Run me!'}
             </button>
     </AceContainer>
     )

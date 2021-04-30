@@ -84,8 +84,8 @@ const Navbar = ( props ) => {
 
           <div className={"menu"}>
               <a href="/about">About</a>
-              <a href="/events">Login</a>
-              <a href="/blog">Sandbox</a>
+              <a href="/sandbox">Sandbox</a>
+              <a href="/classrooms">Classrooms</a>
           </div>
       </NavWrapper>
   )

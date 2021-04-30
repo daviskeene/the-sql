@@ -11,7 +11,7 @@ const Layout = ( props ) => {
         <ThemeProvider theme={theme}>
             <GlobalStyle />
             <Head>
-                <title>{props.pageTitle ? `${props.pageTitle} | Founders` : "Founders"}</title>
+                <title>{props.pageTitle ? `${props.pageTitle}` : "The SQL"}</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 

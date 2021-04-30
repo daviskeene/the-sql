@@ -37,31 +37,31 @@ const Footer = () => (
     <FooterWrapper>
         <ul className={"icons"}>
             <li>
-                <a href="https://www.facebook.com/illinoisfounders">
+                <a href="https://www.facebook.com/illinoislabs">
                     <FontAwesomeIcon icon={faFacebookF} />
                 </a>
             </li>
 
             <li>
-                <a href="https://www.instagram.com/illinoisfounders/">
+                <a href="https://www.instagram.com/dakeenekid/">
                     <FontAwesomeIcon icon={faInstagram} />
                 </a>
             </li>
 
             <li>
-                <a href="https://www.linkedin.com/company/founders-illinois-entrepreneurs/">
+                <a href="https://www.linkedin.com/in/daviskeene/">
                     <FontAwesomeIcon icon={faLinkedin} />
                 </a>
             </li>
 
             <li>
-                <a href="mailto:team@founders.illinois.edu">
+                <a href="mailto:dbkeene.tsyc@gmail.com">
                     <FontAwesomeIcon icon={faEnvelope} />
                 </a>
             </li>
         </ul>
 
-        <p>Founders - Illinois Entrepreneurs © 2021</p>
+        <p>The SQL Team © 2021</p>
     </FooterWrapper>
 );
 
