@@ -19,5 +19,8 @@ urlpatterns = [
     path('cesar/', views.advanced_query_cesar, name='cesar'),
     path('pakhi/', views.advanced_query_pakhi, name='pakhi'),
     path('shivangi/', views.advanced_query_shivangi, name='shivangi'),
-    path('grade/', csrf_exempt(views.grade_assignment), name='grade')
+    path('grade/', csrf_exempt(views.grade_assignment), name='grade'),
+    path('run/', csrf_exempt(views.run_query), name='run_query'),
+    path('classroom-assignments/', views.get_assignments_in_classroom, name='classroom-assignments'),
+    path('create-test-cases/', csrf_exempt(views.create_test_cases), name='create-test-cases')
 ]

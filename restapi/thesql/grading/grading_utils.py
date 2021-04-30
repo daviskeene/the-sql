@@ -31,8 +31,9 @@ def generate_test_cases(query, connection):
         cursor.execute(query)
 
         results = cursor.fetchall()
+        print(results)
         # Current delimeter is '%<>%', which separates rows
-        return DELIMETER.join([x for x in results])
+        return DELIMETER.join([str(x) for x in results])
 
 
 def parse_test_cases(test_cases: str):
@@ -44,6 +45,7 @@ def parse_test_cases(test_cases: str):
     for row in rows:
         # row is a string, so we must convert all of its comma separated values into data
         parsed_row = row.strip('(').strip(')').split(', ')
+        parsed_row = [x.strip("'") for x in parsed_row]
         outarr.append(parsed_row)
     return outarr
 
@@ -76,6 +78,18 @@ def validate_query(query):
 def generate_random_number(length):
     import random
     return int(random.random() * length)
+
+
+def pp(cursor, data=None, rowlens=0):
+    from beautifultable import BeautifulTable
+
+    table = BeautifulTable()
+    table.column_headers["DJ Name"]
+    result = cursor.fetchall()
+
+    for row in result:
+        table.append_row(row)
+    print(table)
 
 if __name__ == "__main__":
     generate_test_cases('SELECT * from thesql_classrooms')

@@ -57,6 +57,7 @@ class ClassroomViewSet(viewsets.ModelViewSet):
 #
 ###
 
+
 def grade_assignment(request):
     """
     Grade an assignment and return the response.
@@ -65,60 +66,135 @@ def grade_assignment(request):
     body = json.loads(body_unicode)
 
     email, query, assigment_id = body['email'], body['query'], body['assignment_id']
+    print(email, query, assigment_id)
 
-    print(email)
-    print(query)
-    print(assigment_id)
+    student = Student.objects.filter(email=email)
+    assignment = Assignment.objects.filter(assignment_id=assigment_id)
+    save_grade = True
 
-    student = Student.objects.get(email=email)
-    assignment = Assignment.objects.get(assignment_id=assigment_id)
-
-    if assignment is None or student is None:
-        print("Assignment or Student is invalid!")
+    if not assignment:
+        print("Assignment is invalid!")
         return JsonResponse({
-            "error": f"Assignment or Student is invalid! a - {assignment}, s - {student}"
+            "status": "error",
+            "result": "Assignment ID is not valid!",
+            "points_earned": 0,
+            "points_total": 0
         })
+
+    assignment = assignment[0]
+
+    if not student:
+        save_grade = False
+    else:
+        student = student[0]
 
     test_cases = parse_test_cases(assignment.assignment_test_cases) # array of expected row values (as str)
     num_correct = 0
+    outputarr = []
+
     with connection.cursor() as cur:
         # validate the query
         if validate_query(query):
             cur.execute(query)
             results = cur.fetchall()
+
+            for row in results:
+                output = ''
+                for word in row:
+                    if output == '':
+                        output = output + str(word)
+                    else:
+                        output = output + ', ' + str(word)
+                outputarr.append(output)
+
             for i, row in enumerate(results):
                 test_row = test_cases[i]
-                str_row = [str(x) for x in row]  # cast all elements in the result to a string
-                num_same = len(set(test_row).union(str_row))
+                row_string = ', '.join(test_row)
+                print(row_string)
 
-                if num_same == len(test_row):
+                if row_string == outputarr[i]:
                     num_correct += 1
 
     points_earned = int((num_correct / len(test_cases)) * assignment.assignment_points)
 
-    assignment_grade = AssignmentGrade.objects.filter(student=student, assignment=assignment)  # type: list
-    print(assignment_grade)
+    if save_grade:
+        assignment_grade = AssignmentGrade.objects.filter(student=student, assignment=assignment)  # type: list
+        print(assignment_grade)
+        if not assignment_grade:
+            # If the assignment grade isn't created, make one
+            assignment_grade = AssignmentGrade.objects.create(student=student, assignment=assignment,
+                                                              assignment_grade_id=generate_random_number(10))
+        else:
+            assignment_grade = assignment_grade[0]
 
-    if not assignment_grade:
-        # If the assignment grade isn't created, make one
-        assignment_grade = AssignmentGrade.objects.create(student=student, assignment=assignment,
-                                                          assignment_grade_id=generate_random_number(10))
-    else:
-        assignment_grade = assignment_grade[0]
+        assignment_grade.points_total = assignment.assignment_points
 
-    print(assignment_grade)
+        if assignment_grade.points_earned < points_earned:
+            assignment_grade.points_earned = points_earned
 
-    assignment_grade.points_total = assignment.assignment_points
-
-    if assignment_grade.points_earned < points_earned:
-        assignment_grade.points_earned = points_earned
-
-    assignment_grade.save()  # commit to database
+        assignment_grade.save()  # commit to database
 
     return JsonResponse({
         "status": "success",
+        "result": outputarr,
         "points_total": assignment.assignment_points,
         "points_earned": points_earned
+    })
+
+
+def run_query(request):
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+
+    query = body['query']
+
+    with connection.cursor() as cur:
+        if validate_query(query):
+            cur.execute(query)
+            result = cur.fetchall()
+            field_names = [i[0] for i in cur.description]
+            outputarr = []
+            outputarr.append(', '.join(field_names))
+            for row in result:
+                output = ''
+                for word in row:
+                    if output == '':
+                        output = output + str(word)
+                    else:
+                        output = output + ', ' + str(word)
+                outputarr.append(output)
+
+    return JsonResponse({
+        "result": outputarr
+    })
+
+
+def create_test_cases(request):
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+
+    query = body['query']
+
+    test_cases_str = generate_test_cases(query, connection)
+
+    return JsonResponse({
+        "test_cases": test_cases_str
+    })
+
+
+def get_assignments_in_classroom(request):
+
+    classroom_id = request.GET.get('id')
+
+    if not Classroom.objects.filter(classroom_id=classroom_id):
+        return JsonResponse({
+            "assignments": []
+        })
+
+    assignments = Assignment.objects.filter(classroom__classroom_id=classroom_id).values()
+
+    return JsonResponse({
+        "assignments": list(assignments)
     })
 
 ###
