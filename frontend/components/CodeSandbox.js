@@ -3,6 +3,8 @@ import styled from "styled-components";
 import AceEditor from 'react-ace';
 import axios from 'axios';
 
+import { URL_ROOT } from '../Environment'
+
 import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-github";
 
@@ -60,7 +62,7 @@ const CodeSandbox = (props) => {
         "query": code
     }
 
-    const url = (props.isGradeable) ? `http://localhost:8000/grade/` : `http://localhost:8000/run/`
+    const url = (props.isGradeable) ? `${URL_ROOT}/grade/` : `${URL_ROOT}/run/`
 
     const getResults = (e) => {
         // Grab text from the AceEditor

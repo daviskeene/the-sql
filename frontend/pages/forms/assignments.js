@@ -2,6 +2,8 @@ import React, { Component, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 
+import { URL_ROOT } from '../Environment'
+
 const FormWrapper = styled.div`
   html {
     font-size: 16px;
@@ -107,7 +109,7 @@ const Feed = (props) => {
   
     // make request to API for students
     useEffect(() => {
-      fetch("http://localhost:8000/assignments/")
+      fetch(`${URL_ROOT}/assignments/`)
         .then((res) => res.json())
         // update state with students
         .then((json) => {
@@ -129,7 +131,7 @@ const Feed = (props) => {
 
     const refreshCards = () => {
       console.log("refresh");
-      fetch("http://localhost:8000/assignments/")
+      fetch(`${URL_ROOT}/assignments/`)
         .then((res) => res.json())
         // update state with students
         .then((json) => {
@@ -212,7 +214,7 @@ class SearchBox extends Component {
         e.preventDefault()
         console.log(e);
 
-        axios.get(`http://localhost:8000/assignments/?search=${this.state.searchQuery}`)
+        axios.get(`${URL_ROOT}/assignments/?search=${this.state.searchQuery}`)
         .then((res) => {
             console.log(res.data)
             this.setState({ results: res.data })
@@ -284,7 +286,7 @@ class AdvancedQueryTable extends Component {
     console.log(e);
 
     // make a request to the appropriate endpoint
-    axios.get(`http://localhost:8000/shivangi/`)
+    axios.get(`${URL_ROOT}/shivangi/`)
       .then((res) => {
           console.log(res.data)
           this.setState({ results: res.data })

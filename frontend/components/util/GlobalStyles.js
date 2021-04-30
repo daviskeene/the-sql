@@ -141,7 +141,6 @@ const theme = {
   nightSky: 'rgba(48,27,66,1)',
   darkBlue: '#022C52',
   darkBlueGradient: 'linear-gradient(180deg, ${({theme}) => theme.darkBlue} 0%,${({theme}) => theme.darkBlue} 35%,${({theme}) => theme.darkBlue} 250%)',
-  endpoint: 'localhost:8000'
 };
 
 export default GlobalStyles;
