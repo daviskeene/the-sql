@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 
-import { URL_ROOT } from '../Environment'
+import { URL_ROOT } from '../../Environment'
 
 const FormWrapper = styled.div`
   html {
