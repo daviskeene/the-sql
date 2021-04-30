@@ -171,6 +171,12 @@ export default function Classrooms() {
                     or they may choose to register to save their grades.
                 </p>
             </div>
+
+            <a href={`/register/`}>
+                    <button css={`color: black;`}>
+                        Register
+                    </button>
+            </a>
         </div>
 
         </SplashScreen>

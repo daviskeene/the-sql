@@ -53,10 +53,11 @@ const CodeSandbox = (props) => {
 
     const [code, setCode] = useState(props.value);
     const [result, setResult] = useState("");
+    const [email, setEmail] = useState("");
 
     const body = (props.isGradeable) ? {
         "query": code,
-        "email": props.email,
+        "email": email,
         "assignment_id": props.assignment_id
     } : {
         "query": code
@@ -78,9 +79,17 @@ const CodeSandbox = (props) => {
         setCode(newValue);
     }
 
+    function onChangeEmail(newValue) {
+        setEmail(newValue.target.value)
+        console.log(email)
+    }
+
     return(
         <AceContainer width={props.width} left={props.left} top={props.top}>
-
+            <label>
+            Email:
+            <input type="text" onChange={onChangeEmail} />
+            </label>
             <AceEditor
                 mode="sql"
                 theme="github"
