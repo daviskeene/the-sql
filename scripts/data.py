@@ -88,6 +88,38 @@ def add_student(cnx, cursor, email, first_name, last_name, classroom_id, points_
     # Make sure data is committed to the database
     cnx.commit()
 
+def add_db_student(cnx, cursor, netid, first_name, last_name, department):
+    """
+    Adds a student to the database. 
+    
+    If no student_id is specified, then we will create one.
+    """
+    if (first_name is None or last_name is None or netid is None or department is None):
+        print("Missing one or more necessary fields.")
+        return
+    
+    add_student_q = ("INSERT INTO Students "
+              "(NetId, FirstName, LastName, Department) "
+              "VALUES (%s, %s, %s, %s)")
+    # Put all data from arguments into a tuple
+    data_student = (netid, first_name, last_name, department)
+
+    # Execute query
+    cursor.execute(add_student_q, data_student)
+
+    # Make sure data is committed to the database
+    cnx.commit()
+
+
+def add_db_enrollment(cnx, cursor, netid, crn, credits, score):
+    add_enrollment_q = ("INSERT INTO Enrollments "
+              "(NetId, CRN, Credits, Score) "
+              "VALUES (%s, %s, %s, %s)")
+
+    data_enrollment = (netid, crn, credits, score)
+    cursor.execute(add_enrollment_q, data_enrollment)
+    cnx.commit()
+
 
 def add_classroom(cnx, cursor, classroom_name, classroom_description, classroom_id=generate_id(generate_random_word(50))):
     """
@@ -165,6 +197,29 @@ def add_assignment_grade(cnx, cursor, assignment_id, student_id, points_earned, 
 ###
 
 
+def add_random_enrollments(cnx, cursor, n):
+        query = f'SELECT CRN FROM Courses;'
+        cursor.execute(query)
+        crns = [x[0] for x in cursor.fetchall()]
+
+        query = f'SELECT NetId FROM Students;'
+        cursor.execute(query)
+        netids = [x[0] for x in cursor.fetchall()]
+
+        for crn in crns:
+            for netid in netids:
+                if random.random() > .5: # randomly add enrollments
+                    add_db_enrollment(
+                        cnx=cnx,
+                        cursor=cursor,
+                        netid=netid,
+                        crn=crn,
+                        credits=random.choice([x for x in range(1,5)]),
+                        score=random.random() * 100
+                    )
+
+
+
 def add_random_students(cnx, cursor, n, classroom):
     """
     Add _n_ random students to the GCP database in a given classroom.
@@ -187,29 +242,25 @@ def add_random_students(cnx, cursor, n, classroom):
 
     last_names = ["Keene", "Gupta", "Monsalud", "Sharma", "Alberg", "Chokshi", "Alawini", "Pandit", "Athreya", "Bangdati", "Dange", "Anderson", "Ashwoon", "Aikin", "Bateman", "Bongard", "Bowers", "Boyd", "Cannon", "Cast", "Deitz", "Dewalt", "Ebner", "Frick", "Hancock", "Haworth", "Hesch", "Hoffman", "Kassing", "Knutson", "Lawless", "Lawicki", "Mccord", "McCormack", "Miller", "Myers", "Nugent", "Ortiz", "Orwig", "Ory", "Paiser", "Pak", "Pettigrew", "Quinn", "Quizoz", "Ramachandran", "Resnick", "Sagar", "Schickowski", "Schiebel", "Sellon", "Severson", "Shaffer", "Solberg", "Soloman", "Sonderling", "Soukup", "Soulis", "Stahl", "Sweeney", "Tandy", "Trebil", "Trusela", "Trussel", "Turco", "Uddin", "Uflan", "Ulrich", "Upson", "Vader", "Vail", "Valente", "Van Zandt", "Vanderpoel", "Ventotla", "Vogal", "Wagle", "Wagner", "Wakefield", "Weinstein", "Weiss", "Woo", "Yang", "Yates", "Yocum", "Zeaser", "Zeller", "Ziegler", "Bauer", "Baxster", "Casal", "Cataldi", "Caswell", "Celedon", "Chambers", "Chapman", "Christensen", "Darnell", "Davidson", "Davis", "DeLorenzo", "Dinkins", "Doran", "Dugelman", "Dugan", "Duffman", "Eastman", "Ferro", "Ferry", "Fletcher", "Fietzer", "Hylan", "Hydinger", "Illingsworth", "Ingram", "Irwin", "Jagtap", "Jenson", "Johnson", "Johnsen", "Jones", "Jurgenson", "Kalleg", "Kaskel", "Keller", "Leisinger", "LePage", "Lewis", "Linde", "Lulloff", "Maki", "Martin", "McGinnis", "Mills", "Moody", "Moore", "Napier", "Nelson", "Norquist", "Nuttle", "Olson", "Ostrander", "Reamer", "Reardon", "Reyes", "Rice", "Ripka", "Roberts", "Rogers", "Root", "Sandstrom", "Sawyer", "Schlicht", "Schmitt", "Schwager", "Schutz", "Schuster", "Tapia", "Thompson", "Tiernan", "Tisler"]
 
+    departments = ["CS", "ECE", "MATH", "MUS", "STAT"]
+
     # Example code for adding students
     for i in range(n):
         first_name = random.choice(first_names)
         last_name = random.choice(last_names)
-        email = f'{first_name.lower()}@gmail.com'
+        netid = first_name.lower()[:5] + last_name[0].lower() + '2'
+        department = random.choice(departments)
 
         classroom_id = classroom  # default classroom id
 
-        points_earned = random.choice([x for x in range(points_total)])
-
-        student_id = generate_id(generate_random_word(50))
-
         # Call add_student
-        add_student(
+        add_db_student(
             cnx=cnx,
             cursor=cursor,
-            email=email,
             first_name=first_name, 
             last_name=last_name, 
-            points_earned=points_earned, 
-            points_total=points_total, 
-            classroom_id=classroom_id,
-            student_id=student_id
+            netid=netid,
+            department=department
         )
 
 
@@ -416,8 +467,9 @@ if __name__ == "__main__":
     # add_assignment(cnx, cursor, "Intro to SQL", "Write a query to select all entries from the table 'Users'.", 10, '', '', 4111)
     # add_assignment_grades_bulk(cnx, cursor, classroom_id)
     # add_assignments(cnx, cursor, 996)
-    # add_students(cnx, cursor, 10)
-    remove_row(cnx, cursor, 'thesql_student', '11495')
+    #add_students(cnx, cursor, 10)
+    add_random_enrollments(cnx, cursor, 10)
+    # remove_row(cnx, cursor, 'thesql_student', '11495')
 
     # Close connections
     cursor.close()

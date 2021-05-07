@@ -197,6 +197,17 @@ def get_assignments_in_classroom(request):
         "assignments": list(assignments)
     })
 
+
+def login(request):
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+
+    email = body['email']
+    password = body['password']
+
+
+    pass
+
 ###
 #
 # ADVANCED QUERIES

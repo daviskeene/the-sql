@@ -168,13 +168,13 @@ export default function Classrooms() {
             <div>
                 <p>
                     These are classrooms, which contain SQL assignments. Students may attempt these problems without an account,
-                    or they may choose to register to save their grades.
+                    or they may choose to sign in via Google to save their grades on assignments.
                 </p>
             </div>
 
-            <a href={`/register/`}>
+            <a href={`/api/auth/signin/`}>
                     <button css={`color: black;`}>
-                        Register
+                        Sign In
                     </button>
             </a>
         </div>

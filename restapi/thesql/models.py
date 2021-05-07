@@ -37,6 +37,7 @@ class Student(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, related_name='students')
+    pwhash = models.CharField(max_length=100)
 
 
 class AssignmentGrade(models.Model):
@@ -64,7 +65,7 @@ class Course(models.Model):
 
 
 class Enrollment(models.Model):
-    NetId = models.CharField(primary_key=True, max_length=10)
+    NetId = models.CharField(max_length=10)
     CRN = models.IntegerField()
     Credits = models.IntegerField()
     Score = models.FloatField()
