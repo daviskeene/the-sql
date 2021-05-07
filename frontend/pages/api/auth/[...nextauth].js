@@ -1,6 +1,6 @@
 import NextAuth from 'next-auth';
 import Providers from 'next-auth/providers';
-import { WEB_ROOT } from '../../../Environment';
+import { WEB_ROOT, URL_ROOT } from '../../../Environment';
 import axios from 'axios';
 
 const options = {
