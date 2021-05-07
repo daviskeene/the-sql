@@ -23,11 +23,11 @@ const AceContainer = styled.div`
         background-color: black;
         color: white;
         width: ${props=>props.width};
-        height: 10vh;
+        height: 12vh;
     }
 
     button {
-        margin-top: 12vh;
+        margin-top: 14vh;
         position: absolute;
         left: -2rem;
         width: ${props => props.width};

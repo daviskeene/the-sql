@@ -103,7 +103,7 @@ const TeamSection = styled.div`
 `
 
 const ProjectSection = styled.div`
-    height: 42rem;
+    height: 36rem;
     text-align: center;
     padding-top: 10rem;
     background-color: #c2b280;

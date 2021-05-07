@@ -1,10 +1,10 @@
 import NextAuth from 'next-auth';
 import Providers from 'next-auth/providers';
-import { URL_ROOT } from '../../../Environment';
+import { WEB_ROOT } from '../../../Environment';
 import axios from 'axios';
 
 const options = {
-  site: URL_ROOT,
+  site: WEB_ROOT,
 
   // Configure one or more authentication providers
   providers: [
@@ -14,7 +14,8 @@ const options = {
     }),
   ],
   // A database is optional, but required to persist accounts in a database
-  database: process.env.DATABASE_URL,callbacks: {
+  database: process.env.DATABASE_URL,
+  callbacks: {
     /**
      * @param  {object} user     User object
      * @param  {object} account  Provider account
