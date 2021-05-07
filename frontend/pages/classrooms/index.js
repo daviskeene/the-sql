@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { BackgroundParticles } from '../../components/partials/HeroPrimary';
 import React, { useEffect, useState } from 'react';
 import { URL_ROOT } from '../../Environment';
+import { useSession } from 'next-auth/client';
 
 
 const Wrapper = styled.div`
@@ -155,6 +156,8 @@ const Feed = (props) => {
 
 export default function Classrooms() {
 
+  const [session, loading] = useSession();
+
   return (
     <Layout pageTitle={"The SQL | Classrooms"}>
       <Wrapper>
@@ -172,9 +175,9 @@ export default function Classrooms() {
                 </p>
             </div>
 
-            <a href={`/api/auth/signin/`}>
+            <a href={!session ? `/api/auth/signin/` : '/profile/'}>
                     <button css={`color: black;`}>
-                        Sign In
+                        {!session ? 'Sign In' : 'View Profile'}
                     </button>
             </a>
         </div>
