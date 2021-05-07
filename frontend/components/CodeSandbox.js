@@ -86,10 +86,12 @@ const CodeSandbox = (props) => {
 
     return(
         <AceContainer width={props.width} left={props.left} top={props.top}>
-            <label>
-            Email:
-            <input type="text" onChange={onChangeEmail} />
-            </label>
+            {props.isGradeable && <label>
+                Email:
+                <input type="text" onChange={onChangeEmail} />
+                </label>
+            }
+            
             <AceEditor
                 mode="sql"
                 theme="github"
