@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from "styled-components";
 import { useRouter } from 'next/router';
+import { signin, signout, useSession } from 'next-auth/client';
 
 // NavBar Styles
 const NavWrapper = styled.nav`
@@ -73,6 +74,7 @@ const Logo = styled.div`
 
 // Navbar
 const Navbar = ( props ) => {
+  const [session, loading] = useSession();
 
   return (
       <NavWrapper>
@@ -86,7 +88,8 @@ const Navbar = ( props ) => {
               <a href="/about">About</a>
               <a href="/sandbox">Sandbox</a>
               <a href="/classrooms">Classrooms</a>
-              <a href="/grades">Grades</a>
+              {session && <a href="/profile">Profile</a>}
+              {!session ? <a href="/api/auth/signin/">Sign In</a> : <a href="/api/auth/signout/">Sign Out</a>}
           </div>
       </NavWrapper>
   )

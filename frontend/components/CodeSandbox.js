@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from "styled-components";
 import AceEditor from 'react-ace';
 import axios from 'axios';
+import { signin, signout, useSession } from 'next-auth/client';
 
 import { URL_ROOT } from '../Environment'
 
@@ -53,11 +54,11 @@ const CodeSandbox = (props) => {
 
     const [code, setCode] = useState(props.value);
     const [result, setResult] = useState("");
-    const [email, setEmail] = useState("");
+    const [session, loading] = useSession();
 
     const body = (props.isGradeable) ? {
         "query": code,
-        "email": email,
+        "email": session ? session.user.email : "",
         "assignment_id": props.assignment_id
     } : {
         "query": code
@@ -79,18 +80,8 @@ const CodeSandbox = (props) => {
         setCode(newValue);
     }
 
-    function onChangeEmail(newValue) {
-        setEmail(newValue.target.value)
-        console.log(email)
-    }
-
     return(
         <AceContainer width={props.width} left={props.left} top={props.top}>
-            {props.isGradeable && <label>
-                Email:
-                <input type="text" onChange={onChangeEmail} />
-                </label>
-            }
             
             <AceEditor
                 mode="sql"
@@ -103,7 +94,7 @@ const CodeSandbox = (props) => {
                 onChange={onChange}
             />
 
-            <textarea className={'results'} value={result}/>
+            <textarea className={'results'} value={result} readOnly />
             
             <button className={'runnable'} onClick={getResults}>
                 {props.isGradeable ? 'Grade me!' : 'Run me!'}

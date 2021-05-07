@@ -11,6 +11,10 @@ const GlobalStyles = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
   }
 
+  a {
+	color: inherit;
+	text-decoration: inherit;
+  }
 
   /* Button */
 

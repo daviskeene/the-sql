@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from "styled-components";
 import Particles from "react-particles-js";
+import { signin, signout, useSession } from 'next-auth/client';
 
 import dynamic from 'next/dynamic'
 
@@ -130,6 +131,8 @@ const ContentContainer = styled.div`
 
 const HeroPrimary = (props) => {
 
+    const [session, loading] = useSession();
+
     return (
         <HeroPrimaryWrapper>
             <BackgroundParticles />
@@ -139,10 +142,12 @@ const HeroPrimary = (props) => {
                     A new look to the CS 411 course at UIUC.
                 </p>
                 <button>
-                    About
+                    <a href="/about">
+                        About
+                    </a>
                 </button>
                 <button>
-                    Login
+                    {!session ? <a href="/api/auth/signin/">Sign In</a> : <a href="/api/auth/signout/">Sign Out</a>}
                 </button>
             </ContentContainer>
 
