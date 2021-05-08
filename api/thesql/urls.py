@@ -23,5 +23,5 @@ urlpatterns = [
     path('run/', csrf_exempt(views.run_query), name='run_query'),
     path('classroom-assignments/', views.get_assignments_in_classroom, name='classroom-assignments'),
     path('create-test-cases/', csrf_exempt(views.create_test_cases), name='create-test-cases'),
-    path('login/', csrf_exempt(views.login), name='login')
+    path('assignments-per-student/', csrf_exempt(views.get_student_assignments), name='get-assignments')
 ]

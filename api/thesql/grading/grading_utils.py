@@ -72,6 +72,9 @@ def validate_query(query):
     """
     Make sure that the query won't harm our database.
     """
+    q_lowercase = query.lower()
+    if 'delete' in q_lowercase or 'drop' in q_lowercase:
+        return False
     return True  # default
 
 

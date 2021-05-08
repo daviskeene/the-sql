@@ -95,8 +95,17 @@ def grade_assignment(request):
     with connection.cursor() as cur:
         # validate the query
         if validate_query(query):
-            cur.execute(query)
-            results = cur.fetchall()
+            try:
+                cur.execute(query)
+                results = cur.fetchall()
+
+            except Exception as e:
+                return JsonResponse({
+                    "status": "failure",
+                    "result": [str(e)],
+                    "points_total": 0,
+                    "points_earned": 0
+                })
 
             for row in results:
                 output = ''
@@ -108,12 +117,21 @@ def grade_assignment(request):
                 outputarr.append(output)
 
             for i, row in enumerate(results):
-                test_row = test_cases[i]
+                test_row= []
+                if i < len(test_cases):
+                    test_row = test_cases[i]
                 row_string = ', '.join(test_row)
-                print(row_string)
 
                 if row_string == outputarr[i]:
                     num_correct += 1
+        else:
+            return JsonResponse({
+                "status": "error",
+                "result": ["Keyword 'DROP' or 'DELETE' detected. Please ensure to use read-only operations only."],
+                "points_total": 0,
+                "points_earned": 0,
+                "grade_saved": False
+            })
 
     points_earned = int((num_correct / len(test_cases)) * assignment.assignment_points)
 
@@ -138,7 +156,8 @@ def grade_assignment(request):
         "status": "success",
         "result": outputarr,
         "points_total": assignment.assignment_points,
-        "points_earned": points_earned
+        "points_earned": points_earned,
+        "grade_saved": save_grade
     })
 
 
@@ -150,6 +169,16 @@ def run_query(request):
 
     with connection.cursor() as cur:
         if validate_query(query):
+            try:
+                cur.execute(query)
+                results = cur.fetchall()
+
+            except Exception as e:
+                return JsonResponse({
+                    "status": "failure",
+                    "result": [str(e)],
+                })
+
             cur.execute(query)
             result = cur.fetchall()
             field_names = [i[0] for i in cur.description]
@@ -163,8 +192,17 @@ def run_query(request):
                     else:
                         output = output + ', ' + str(word)
                 outputarr.append(output)
+        else:
+            return JsonResponse({
+                "status": "error",
+                "result": ["Keyword 'DROP' or 'DELETE' detected. Please ensure to use read-only operations only."],
+                "points_total": 0,
+                "points_earned": 0,
+                "grade_saved": False
+            })
 
     return JsonResponse({
+        "status": "success",
         "result": outputarr
     })
 
@@ -197,16 +235,33 @@ def get_assignments_in_classroom(request):
         "assignments": list(assignments)
     })
 
-
-def login(request):
+def get_student_assignments(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
 
     email = body['email']
-    password = body['password']
+    student = Student.objects.filter(email=email)
 
+    if not student:
+        return JsonResponse({
+            "status": "error",
+            "result": []
+        })
+    else:
+        student = student[0]
+        classroom = student.classroom
 
-    pass
+        assignment_grades = AssignmentGrade.objects.filter(student=student).values()
+        for assignment_grade in assignment_grades:
+            a = Assignment.objects.get(assignment_id=assignment_grade['assignment_id'])
+            assignment_grade.update({
+                "assignment_name": a.assignment_name
+            })
+
+    return JsonResponse({
+        "status": "success",
+        "result": list(assignment_grades)
+    })
 
 ###
 #
